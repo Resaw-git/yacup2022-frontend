@@ -13,6 +13,9 @@
     --color-competition-frontend: #00b341;
     --color-competition-backend: #ffb800;
     --color-competition-algorithm: #07f;
+    --cursor: url('https://pictures.s3.yandex.net/mobile/touch-cursor.png');
+    --cursor-2x: url('https://pictures.s3.yandex.net/mobile/touch-cursor@2x.png');
+    --cursor-image-set: var(--cursor) 1x, var(--cursor-2x) 2x;
 }
 
 body {
@@ -148,6 +151,16 @@ body {
     margin-left: 235px;
 }
 
+.task {
+    margin-bottom: 100px;
+}
+
+.images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 50px;
+}
+
 h1,h2,h3,h4 {
     font-family: "Yandex Sans Display", "Yandex Sans Text", "Open Sans", "Helvetica Neue", Arial, sans-serif;
     padding-bottom: 40px;
@@ -222,6 +235,11 @@ summary+details>summary {
     margin-left: 25px;
 }
 
+details + p, pre + p {
+    padding-top: 25px;
+    padding-bottom: 0;
+}
+
 :not(pre)>code[class*=language-], pre[class*=language-] {
     background: #16163d!important;
 }
@@ -242,5 +260,21 @@ code[class*=language-], pre[class*=language-] {
     -webkit-hyphens: none;
     -ms-hyphens: none;
     hyphens: none;
+    margin-bottom: 40px;
+}
+
+.link {
+    font-family: "Yandex Sans Text", "Open Sans", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    color: #fff;
+    font-size: 18px;
+    line-height: 1.4;
+    text-decoration: underline;
+    transition: color .3s;
+}
+
+.link:hover {
+    color: #9797c5;
 }
 

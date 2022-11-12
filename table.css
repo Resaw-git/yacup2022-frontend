@@ -1,0 +1,46 @@
+.scrollable-container {
+    width: 400px;
+    height: 400px;
+    border: 1px solid #f00;
+    background-color: #fff;
+    overflow: auto;
+    cursor: var(--cursor) 12 12, auto !important;
+    cursor: image-set(var(--cursor-image-set)) 12 12, auto !important;
+    cursor: -webkit-image-set(var(--cursor-image-set)) 12 12, auto !important;
+    margin-bottom: 40px;
+}
+
+.table {
+    width: auto;
+    
+    border: none;
+    border-collapse: collapse;
+}
+
+.table:hover {
+    background-color: #848484;
+}
+
+.table:active {
+    background-color: #861a1a;
+}
+
+.table__cell {
+    min-width: 60px;
+    height: 60px;
+
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table__cell:hover {
+    background-color: #c0c0c0;
+}
+
+.table__cell:active {
+    background-color: #b93434;
+}
+
+.hover { background-color: #c0c0c0; }
+
+.active { background-color: #b93434; }
