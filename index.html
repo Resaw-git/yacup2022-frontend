@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Yandex Cup 2022. Квалификации Фронтенд</title>
+    <link rel="stylesheet" href="table.css">
     <link rel="stylesheet" href="prism.css">
     <link rel="stylesheet" href="font/font.css">
     <link rel="stylesheet" href="style.css">
@@ -42,6 +43,7 @@
     <main class="content">
         <div class="container">
             <h1>Задачи квалификации чемпионата по программированию 2022 среди фронтенд-разработчиков</h1>
+            <div class="task">
             <h2>A. Время анализировать</h2>
             <h4>Описание</h4>
             <p>
@@ -73,17 +75,48 @@
             </ul>
             <p>К этому поведению так же применимо всплытие событий.</p>
             <p>Ваш скрипт будет подключен к странице с заранее подготовленными HTML-разметкой и стилями. Будут скроллящийся блок и стили, определённые для :hover и :active состояний, которые должны работать согласно описанию выше.</p>
+
             <details>
                 <summary>
-                    Пример
+                    Пример и примечание
                 </summary>
-                <a href="exampleA.html">ссылка на пример</a>
+                <h4>Пример: Эмуляция тачскрина</h4>
+                <div class="scrollable-container">
+                    <table class="scrollable-container__content table"></table>
+                </div>
+                <script>
+                    const table = document.getElementsByClassName('table').item(0);
+                    let tr = document.createElement('tr');
+
+                    for (let i = 0; i < 100; i++) {
+                        if (i % 10 === 0) {
+                            table.appendChild(tr);
+
+                            tr = document.createElement('tr');
+                        }
+
+                        const td = document.createElement('td');
+
+                        td.classList.add('table__cell');
+                        td.innerText = `${i}`;
+
+                        tr.appendChild(td);
+                    }
+
+                    table.appendChild(tr);
+                </script>
+                <h4>Примечания:</h4>
+                <p>Решение должно содержать только код на JS (оборачивать в тег &lt;script&gt; не нужно).</p>
+                <p>По ссылке ниже можно найти архив с примером html-страницы для отладки, на которую будет встроено решение.</p>
+                <a href="https://contest.yandex.ru/yacup/contest/40984/download/A/" class="link">
+                    Скачать условие задачи
+                </a>
             </details>
+
             <details>
                 <summary>
                     <strong>Решение</strong>
                 </summary>
-
                 <details>
                     <summary>
                        Показать код
@@ -177,9 +210,370 @@ function getLastCord() {
                     </code>
                 </pre>
                 </details>
+
+
+                <h4>Эмуляция тачскрина</h4>
+                <div class="scrollable-container sol-cont">
+                    <table class="scrollable-container__content table sol-tabl"></table>
+                </div>
+                <script>
+                    const sol_table = document.querySelector('.sol-tabl');
+                    let sol_tr = document.createElement('tr');
+
+                    for (let i = 0; i < 100; i++) {
+                        if (i % 10 === 0) {
+                            sol_table.appendChild(sol_tr);
+
+                            sol_tr = document.createElement('tr');
+                        }
+
+                        const sol_td = document.createElement('td');
+
+                        sol_td.classList.add('table__cell');
+                        sol_td.innerText = `${i}`;
+
+                        sol_tr.appendChild(sol_td);
+                    }
+
+                    table.appendChild(tr);
+                </script>
+
+                <script>
+                    const container = document.querySelector('.sol-cont')
+                    const sensitive = 10;
+                    const startCord = {x: 0, y: 0};
+                    const currentCord = {x: 0, y: 0};
+                    const lastCord = {x: 0, y: 0};
+                    let mousedown = false;
+
+                    const cssRules = document.styleSheets[0].cssRules
+                    replaceStyle(cssRules, '.table__cell:hover')
+                    replaceStyle(cssRules, '.table__cell:active')
+
+                    container.style.userSelect = 'none';
+                    container.style.overflow = 'hidden';
+                    sol_table.style.backgroundColor = '#fff';
+
+                    container.addEventListener('wheel', (e) => e.preventDefault())
+
+                    container.addEventListener('mousedown', (e) => {
+                        const hover = document.querySelector('.hover')
+                        if (hover) {
+                            hover.classList.remove('hover')
+                        }
+                        e.target.classList.add('hover')
+                        setTimeout(() => e.target.classList.add('active'), 250)
+                        mousedown = true;
+                        getStartCord(e)
+                    });
+
+                    document.addEventListener('mouseup', () => {
+                        mousedown = false;
+                    });
+
+                    container.addEventListener('mouseup', (e) => {
+                        setTimeout(() => e.target.classList.remove('active'), 250)
+                    });
+
+                    container.addEventListener('mousemove', e => {
+                        getCurrentCord(e);
+                        setTimeout(() => e.target.classList.remove('active'), 250)
+                        if (mousedown) {
+                            container.scroll(
+                                getDifference(startCord.x, currentCord.x, e) + lastCord.x,
+                                getDifference(startCord.y, currentCord.y, e) + lastCord.y
+                            );
+                        }
+                        getLastCord();
+                    });
+
+                    function replaceStyle(styleSheet, pseudo) {
+                        for (let i = 0; i < styleSheet.length; i++) {
+                            if (styleSheet[i].selectorText === pseudo) {
+                                styleSheet[i].style.backgroundColor = ""
+                            }
+                        }
+                    }
+
+                    function getDifference(startCord, currentCord, e) {
+                        const diff = startCord - currentCord
+                        if (diff > sensitive) {
+                            getStartCord(e)
+                            return sensitive
+                        } else if (diff < -sensitive) {
+                            getStartCord(e)
+                            return  -sensitive
+                        } else return diff
+                    }
+
+                    function getStartCord(e) {
+                        startCord.x = e.clientX;
+                        startCord.y = e.clientY;
+                    }
+
+                    function getCurrentCord(e) {
+                        currentCord.x = e.clientX;
+                        currentCord.y = e.clientY;
+                    }
+
+                    function getLastCord() {
+                        lastCord.x = container.scrollLeft;
+                        lastCord.y = container.scrollTop;
+                    }
+                </script>
             </details>
+            </div>
+
+            <div class="task">
+                <h2>C. Плохие новости</h2>
+                <h4>Описание</h4>
+                <p>
+                    Расшифровав сообщения, ты холодеешь. Компьютер буднично сообщал, что до столкновения с астероидом остается меньше пяти часов, и предлагал проследовать в космопорт, чтобы покинуть планету. Похоже, те, кто построил город, благоразумно прислушались к совету. Хорошо бы узнать, как именно они выбрались отсюда, если хронопорт не удастся починить вовремя.
+                </p>
+                <p>
+                    На улице ты замечаешь вышки, которые могли быть частью навигационного оборудования для местного транспорта. Подключившись к системе с помощью старинного компьютера, ты видишь, что вышки в разное время регистрировали подключение последнего шаттла, который, вероятно, следовал к космопорту. Осталось вычислить его путь и понять, где он находится сейчас. И почему эта цивилизация не изобрела обычной зарядки для ноута? Батарея показывала 79%.
+                </p>
+                <p>Условия: </p>
+                <ul>
+                    <li>
+                        Напишите функцию triangulation, которая будет отрисовывать станции и примерное местонахождение пользователя.
+                    </li>
+                    <li>
+                        Территорию представляет блок .Map размером 500x500px;
+                    </li>
+                    <li>
+                        Базовая станция отображается черной (#000) точкой 20х20px;
+                    </li>
+                    <li>
+                        Радиус покрытия – это окружность толщины 1px и цветом #000;
+                    </li>
+                    <li>
+                        На вход получаем два списка, первый - список базовых станций, второй - список id станций, зарегистрировавших пользователя в определенные моменты (единовременно пользователя регистрируют как минимум две станции);
+                    </li>
+                    <li>
+                        Территорию, где находился пользователь в зависимости от регистрации у тех или иных вышек заливаем цветом. Цвет меняется инкрементально, в зависимости от положения элемента во входном списке (прим: 0-е пересечение - #000, 3-е - #333, 10-е - #aaa).
+                    </li>
+                </ul>
+                <pre class="  language-javascript">
+                    <code class="  language-javascript">
+interface Station {
+    id: number;
+    x: number;
+    y: number;
+    r: number;
+}
+
+function triangulation(stations: Station[], stationIds: number[][]) {
+    // code
+}</code>
+                </pre>
+                <details>
+                    <summary>
+                        Примеры и примечание
+                    </summary>
+                    <details>
+                        <summary>
+                            Скриншоты ожидаемого результата:
+                        </summary>
+                        <div class="images">
+                            <img src="image/example1.png" alt="example" width="250" height="250" title="Пример 1">
+                            <img src="image/example2.png" alt="example" width="250" height="250" title="Пример 2">
+                            <img src="image/example3.png" alt="example" width="250" height="250" title="Пример 3">
+                        </div>
+                    </details>
+                    <p>Пример 1:</p>
+                    <pre class="  language-javascript">
+                    <code class="  language-javascript">
+const stations = [{
+    "id": 1,
+    "x": 350,
+    "y": 370,
+    "r": 220
+  },
+  {
+    "id": 2,
+    "x": 170,
+    "y": 130,
+    "r": 190
+  }];
+
+const stationIds = [[1, 2]]</code>
+                </pre>
+
+                    <p>Пример 2:</p>
+                    <pre class="  language-javascript">
+                    <code class="  language-javascript">
+const stations = [{
+    "id": 1,
+    "x": 100,
+    "y": 100,
+    "r": 100
+  }, {
+    "id": 2,
+    "x": 350,
+    "y": 120,
+    "r": 180
+  }, {
+    "id": 3,
+    "x": 150,
+    "y": 330,
+    "r": 180
+  }, {
+    "id": 4,
+    "x": 410,
+    "y": 390,
+    "r": 150
+  }];
+
+const stationIds = [
+    [1, 2],
+    [2, 3],
+    [3, 4]
+  ]</code>
+                </pre>
+
+                    <p>Пример 3:</p>
+                    <pre class="language-javascript">
+                    <code class="language-javascript">
+const stations = [{
+    "id": 1,
+    "x": 250,
+    "y": 100,
+    "r": 160
+  }, {
+    "id": 2,
+    "x": 125,
+    "y": 325,
+    "r": 160
+  }, {
+    "id": 3,
+    "x": 375,
+    "y": 325,
+    "r": 160
+  }];
+
+const stationIds = [[1, 2, 3]];</code>
+                </pre>
+                    <h4>Примечания:</h4>
+                        <p>Решение должно представлять из себя один HTML-файл (все нужные скрипты и стили должны быть включены внутрь).</p>
+                    <p><strong>Важно! </strong>Автоматические тесты будут запущены на вызов функции window.onSolutionReady(), которая декларируется автоматически в тестовом окружении (не нужно её переопределять) и уже вызывается в шаблоне (без необходимости не нужно менять эту часть кода). Если вызов функции window.onSolutionReady() не произойдёт в течение 2 минут, то задание считается невыполненным. Структура HTML из шаблона решения должна быть сохранена.</p>
+                    <p>Ваше решение будет тестироваться в последней версии браузера Google Chrome.</p>
+                    <a href="https://contest.yandex.ru/yacup/contest/40984/download/C/" class="link">
+                        Скачать условие задачи
+                    </a>
+                </details>
+
+                <details>
+                    <summary>
+                        <strong>Решение</strong>
+                    </summary>
+                    <pre class="language-javascript">
+                        <code class="language-javascript">
+function triangulation(stations, stationIds) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 500 500');
+    svg.setAttribute('stroke', 'black');
+    document.querySelector('.Map').appendChild(svg);
+
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    svg.appendChild(defs);
+
+    function group(id, appendTo) {
+        const groupName = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        groupName.setAttribute('id', id);
+        appendTo.appendChild(groupName);
+        return groupName;
+    }
+
+    const groupDots = group('groupDots', svg);
+    const groupCircle = group('groupDots', defs);
+    const groupClips = group('groupClips', defs);
+
+    function renderDots(station) {
+        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        dot.setAttribute('fill', '#000');
+        dot.setAttribute('r', '10');
+        dot.setAttribute('cx', station.x);
+        dot.setAttribute('cy', station.y);
+        groupDots.appendChild(dot)
+    }
+
+    function renderCircle(station) {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('stroke', '#000');
+        circle.setAttribute('r', station.r);
+        circle.setAttribute('cx', station.x);
+        circle.setAttribute('cy', station.y);
+        circle.setAttribute('id', `circle_${station.id}`);
+        groupCircle.appendChild(circle);
+
+        const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#circle_${station.id}`);
+        use.setAttribute('stroke', '#000');
+        use.setAttribute('fill', 'none');
+        svg.appendChild(use);
+    }
+
+    let clipNumber = 0;
+    let color = 0;
+
+    function renderIntersections(stationIds) {
+        stationIds.forEach(el => {
+            let hex = `#${color.toString(16)}${color.toString(16)}${color.toString(16)}`
+            el.forEach((element, index) => {
+                if (index === 0) {
+                    const clip = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+                    clip.setAttribute('id', `clip${clipNumber}`);
+                    groupClips.appendChild(clip);
+
+                    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                    use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',  `#circle_${element}`);
+                    document.getElementById(`clip${clipNumber}`).appendChild(use);
+                    ++clipNumber;
+                    return;
+                }
+
+                if (index === el.length - 1) {
+                    const intersection = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                    intersection.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#circle_${element}`);
+                    intersection.setAttribute('fill', hex);
+                    intersection.setAttribute('clip-path', `url(#clip${clipNumber - 1})`);
+                    svg.appendChild(intersection);
+                    ++color;
+                    return;
+                }
+
+                const clip = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+                clip.setAttribute('id', `clip${clipNumber}`);
+                groupClips.appendChild(clip);
+
+                const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',  `#circle_${element}`);
+                use.setAttribute('clip-path',  `url(#clip${clipNumber - 1})`);
+                document.getElementById(`clip${clipNumber}`).appendChild(use);
+                ++clipNumber;
+            })
+        })
+    }
+
+
+    stations.map((el) => {
+        renderDots(el);
+        renderCircle(el);
+    })
+    renderIntersections(stationIds);
+}
+                        </code>
+                    </pre>
+                </details>
+            </div>
+
         </div>
+
+
     </main>
+
+
 
 
 
